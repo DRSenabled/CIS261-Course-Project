@@ -2,7 +2,7 @@ from datetime import datetime
 
 def CreateUsers():
     print("Create users, passwords, and roles")
-    UserFIle = open("Users.txt", "a+")
+    UserFile = open("Users.txt", "a+")
     while True:
         username = GetUserName()
         if (username.upper() == "END"):
@@ -10,7 +10,7 @@ def CreateUsers():
         userpwd = GetUserPassword()
         userrole = GetUserRole()
 
-        UserDetail = username + "|" + userpwd + "|" userrole + "\n"
+        UserDetail = username + "|" + userpwd + "|" + userrole + "\n"
         UserFile.write(UserDetail)
 
     UserFile.close()
@@ -27,7 +27,7 @@ def GetUserPassword():
 def GetUserRole():
     userrole = input("Enter a role (Admin or User): ")
     while True:
-        if (userrole.upper() == "ADMIN" or userrole.upper() == "USER")
+        if (userrole.upper() == "ADMIN" or userrole.upper() == "USER"):
             return userrole
         else: 
             userrole = input("Enter a user role (Admin or User): ")
@@ -55,10 +55,10 @@ def Login():
         UserDetail = UserFile.readline()
         if not UserDetail:
             return UserRole, UserName, UserPwd
-        UserDetail = UserDetail.replace("\n, "")
+        UserDetail = UserDetail.replace("\n", "")
 
         UserList = UserDetail.split("|")
-        if UserName == UserLIst[0] and UserPwd == UserList[1]:
+        if UserName == UserList[0] and UserPwd == UserList[1]:
             UserRole = UserList[2]
             return UserRole, UserName
 
@@ -104,9 +104,9 @@ def printinfo(DetailsPrinted):
         if (rundate.upper() == "ALL"):
             break
         try:
-            runddate = datetime.strptime(rundate, %m/%d/%Y)
+            runddate = datetime.strptime(rundate, "%m/%d/%Y")
             break
-        except BalueError:
+        except ValueError:
             print("Invalid date format. Try again. ")
             print()
             continue
@@ -119,7 +119,7 @@ def printinfo(DetailsPrinted):
         EmpList = EmpDetail.split("|")
         fromdate = EmpList[0]
         if (str(rundate).upper() != "ALL"):
-            checkdate = datetime.strptime(fromdate, %m/%d/%Y")
+            checkdate = datetime.strptime(fromdate, "%m/%d/%Y")
             if (checkdate < rundate):
                 continue
         todate = EmpList[1]
@@ -127,7 +127,7 @@ def printinfo(DetailsPrinted):
         hours = float(EmpList[3])
         hourlyrate = float(EmpList[4])
         taxrate = float(EmpList[5])
-        grosspay, incometax, netpay, = CalTaxAndNetPay(hours, hourlyrate, taxrate)
+        grosspay, incometax, netpay, = CalcTaxAndNetpay(hours, hourlyrate, taxrate)
         print(fromdate, todate, empname, f"{hours:,.2f}", f"{hourlyrate:,.2f}", f"{grosspay:,.2f}", f"{taxrate:,.1%}", f"{incometax:,.2f}", f"{netpay:,.2f}")
         TotEmployees += 1
         TotHours += hours
@@ -138,7 +138,7 @@ def printinfo(DetailsPrinted):
         EmpTotals["TotHrs"] = TotHours
         EmpTotals["TotGrossPay"] = TotGrossPay
         EmpTotals["TotTax"] = TotTax
-        EmpTotals[TotNetPay"] = TotNetPay
+        EmpTotals["TotNetPay"] = TotNetPay
         DetailsPrinted = True
 
     if (DetailsPrinted):
