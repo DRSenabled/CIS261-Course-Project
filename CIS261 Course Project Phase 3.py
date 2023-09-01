@@ -1,119 +1,136 @@
-import datetime
+def GetEmpName():
+    empname = input("Enter employee name: ")
+    return empname
+    
+def GetDatesWorked():
+    fromdate = input("Enter Start Date (mm/dd/yyyy): ")
+    todate = input("Enter End Date (mm/dd/yyyy): ")
+    return fromdate, todate
+    
+def GetHoursWorked():
+    hours = float(input('Enter amount of hours worked: '))
+    return hours
+    
+def GetHourlyRate():
+    hourlyrate = float(input("Enter hourly rate: "))
+    return hourlyrate
+    
+def GetTaxRate():
+    taxrate = float(input("Enter tax rate: "))
+    return taxrate
+    
+def CalcTaxAndNetPay(hours, hourlyrate, taxrate):
+    grosspay = hours * hourlyrate
+    incometax = grosspay * taxrate
+    netpay = grosspay - incometax
+    return grosspay, incometax, netpay
+    
+def printinfo(EmpDetailList):
+    TotEmployees = 0
+    TotHours = 0.00
+    TotGrossPay = 0.00
+    TotTax = 0.00
+    TotNetPay = 0.00
+    
+    for EmpList in EmpDetailList:
+        fromdate = EmpList[0]
+        todate = EmpList[1]
+        empname = EmpList[2]
+        hours = EmpList[3]
+        hourlyrate = EmpList[4]
+        taxrate = EmpList[5]
+        
+        grosspay, incometax, netpay = CalcTaxAndNetPay(hours,
+hourlyrate, taxrate)
+        print(fromdate, todate, empname, f"{hours:,.2f}",
+f"{hourlyrate:,.2f}", f"{grosspay:,.2f}", f"{taxrate:,.1%}",
+                f"{incometax:,.2f}", f"{netpay:,.2f}")
+        
+        TotEmployees += 1
+        TotHours += hours
+        TotGrossPay += grosspay
+        TotTax += incometax
+        TotNetPay += netpay
+        
+    EmpTotals["TotEmp"] = TotEmployees
+    EmpTotals["TotHrs"] = TotHours
+    EmpTotals["TotGrossPay"] = TotGrossPay
+    EmpTotals["TotTax"] = TotTax
+    EmpTotals["TotNetPay"] = TotNetPay
+    
+def PrintTotals(EmpTotals):
+    print()
+    print(f"Total Number of Employees: {EmpTotals['TotEmp']}")
+    print(f"Total Hours Worked: {EmpTotals['TotHrs']}")
+    print(f"Total Gross Pay: {EmpTotals['TotGrossPay']:,.2f}")
+    print(f"Total Income Tax: {EmpTotals['TotTax']:,.2f}")
+    print(f"Total Net Pay: {EmpTotals['TotNetPay']:,.2f}")
+    
+def WriteEmployeeInformation(employee):
+    file = open("employeeinfo.txt", "a")
 
-def calculate_tax_and_netpay(total_hours, hourly_rate, tax_rate):
-    tax = float(total_hours) * float(hourly_rate) * (float(tax_rate) / 100)
-    net_pay = float(total_hours) * float(hourly_rate) - tax
-    return tax, net_pay
-
-def get_name():
-    name = input("Enter employee name: ")
-    return name
-
-def get_total_hours():
-    total_hours = float(input("Enter total hours: "))
-    return total_hours
-
-def get_hourly_rate():
-    hourly_rate = float(input("Enter hourly rate: "))
-    return hourly_rate
-
-def get_tax_rate():
-    tax_rate = float(input("Enter tax rate (in %): "))
-    return tax_rate
-
-def get_gross_pay(total_hours, hourly_rate):
-    gross_pay = float(total_hours) * float(hourly_rate)
-    return gross_pay
-
-def display_employee_info(from_date, to_date, name, total_hours, hourly_rate, tax_rate, tax, gross_pay, net_pay):
-    print("----------------------------------------------------")
-    print("From date:", from_date.strftime('%m/%d/%Y'))
-    print("To date:", to_date.strftime('%m/%d/%Y'))
-    print("Employee name:", name)
-    print("Total hours:", total_hours)
-    print("Hourly rate:", hourly_rate)
-    print("Gross pay:", gross_pay)
-    print("Tax rate:", tax_rate)
-    print("Income tax:", tax)
-    print("Net pay:", net_pay)
-    print("----------------------------------------------------")
-
-def display_total_info(total_dict):
-    print("----------------------------------------------------")
-    print("Total number of employees:", total_dict['total_employees'])
-    print("Total hours:", total_dict['total_hours'])
-    print("Total tax:", total_dict['total_tax'])
-    print("Total gross pay:", total_dict['total_gross_pay'])
-    print("Total net pay:", total_dict['total_net_pay'])
-    print("----------------------------------------------------")
-
-def get_from_date():
-    while True:
-        from_date = input("Enter from date in mm/dd/yyyy format (or 'All' for all records): ")
-        if from_date.lower() == "all" or is_valid_date(from_date):
-            return from_date
+    file.write(
+        '{}|{}|{}|{}|{}|{}\n'.format(employee[0], employee[1],
+employee[2], employee[3], employee[4], employee[5]))
+    
+def GetFromDate():
+    valid = False
+    fromdate = ""
+    
+    while not valid:
+        fromdate = input("Enter From Date (mm/dd/yyyy): ")
+        
+        if (len(fromdate.split('/')) != 3 and fromdate.upper() !=
+'ALL'):
+            print("Invalid Date Format: ")
         else:
-            print("Invalid date format. Please use mm/dd/yyyy or 'All'.")
-
-def is_valid_date(date_str):
-    try:
-        datetime.datetime.strptime(date_str, "%m/%d/%Y")
-        return True
-    except ValueError:
-        return False
-
-def process_records(file_path, from_date):
-    with open(file_path, "r") as file:
-        lines = file.readlines()
-
-    total_dict = {"total_employees": 0, "total_hours": 0, "total_tax": 0, "total_gross_pay": 0, "total_net_pay": 0}
-
-    for line in lines:
-        record = line.strip().split("|")
-        record_from_date = datetime.datetime.strptime(record[0], "%m/%d/%Y").date()
-
-        if from_date.lower() == "all" or from_date == record_from_date:
-            from_date = record_from_date
-            to_date = datetime.datetime.strptime(record[1], "%m/%d/%Y").date()
-            name = record[2]
-            hours = float(record[3])
-            hourly_rate = float(record[4])
-            tax_rate = float(record[5])
-
-            gross_pay = get_gross_pay(hours, hourly_rate)
-            tax, net_pay = calculate_tax_and_netpay(hours, hourly_rate, tax_rate)
-            display_employee_info(from_date, to_date, name, hours, hourly_rate, tax_rate, tax, gross_pay, net_pay)
-
-            total_dict['total_employees'] += 1
-            total_dict['total_hours'] += hours
-            total_dict['total_tax'] += tax
-            total_dict['total_gross_pay'] += gross_pay
-            total_dict['total_net_pay'] += net_pay
-
-    display_total_info(total_dict)
-
-def main():
-    file_path = "employee_records.txt"
-
-    while True:
-        name = get_name()
-
-        if name == "End":
-            break
-
-        from_date, to_date = get_from_and_to_date()
-
-        hours = get_total_hours()
-        hourly_rate = get_hourly_rate()
-        tax_rate = get_tax_rate()
-
-        with open(file_path, "a") as file:
-            file.write(f"{from_date}|{to_date}|{name}|{hours}|{hourly_rate}|{tax_rate}\n")
-
-        print()  # Just to start printing in a new line once one user data insertion is completed
-
-    from_date_to_report = get_from_date()
-    process_records(file_path, from_date_to_report)
-
+            valid = True
+            
+    return fromdate
+    
+def ReadEmployeeInformation(fromdate):
+    EmpDetailList = []
+    
+    file = open("employeeinfo.txt", "r")
+    data = file.readlines()
+    
+    condition = True
+    if fromdate.upper() == 'ALL':
+        condition = False
+        
+    for employee in data:
+        
+        employee = [x.strip() for x in employee.strip().split("|")]
+        if not condition:
+            EmpDetailList.append(
+                [employee[0], employee[1], employee[2],
+float(employee[3]), float(employee[4]), float(employee[5])])
+        else:
+            if fromdate == employee[0]:
+            EmpDetailList.append(
+[employee[0], employee[1], employee[2],
+float(employee[3]), float(employee[4]), float(employee[5])])
+return EmpDetailList
 if __name__ == "__main__":
-    main()
+EmpDetailList = []
+EmpTotals = {}
+while True:
+empname = GetEmpName()
+if (empname.upper() == "END"):
+break
+fromdate, todate = GetDatesWorked()
+hours = GetHoursWorked()
+hourlyrate = GetHourlyRate()
+taxrate = GetTaxRate()
+print()
+EmpDetail = [fromdate, todate, empname, hours, hourlyrate,
+taxrate]
+WriteEmployeeInformation(EmpDetail)
+print()
+print()
+fromdate = GetFromDate()
+EmpDetailList = ReadEmployeeInformation(fromdate)
+print()
+printinfo(EmpDetailList)
+print()
+PrintTotals(EmpTotals)
